@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='django-cached_authentication_middleware',
-    version='0.1.0',
+    version='0.1.1',
     author='Selwin Ong',
     author_email='selwin.ong@gmail.com',
     packages=['cached_auth'],

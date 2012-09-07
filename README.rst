@@ -42,6 +42,11 @@ To run the test suite::
 Changelog
 ---------
 
+Version 0.1.1
+=============
+
+* Fixed an error where middleware tries to call "get_profile" on AnonymousUser
+
 Version 0.1
 ===========
 
