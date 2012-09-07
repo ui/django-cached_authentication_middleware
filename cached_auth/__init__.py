@@ -43,7 +43,8 @@ def get_cached_user(request):
             if profile_model:
                 try:
                     user.get_profile()
-                except profile_model.DoesNotExist:
+                # Handle exception for user with no profile and AnonymousUser
+                except (profile_model.DoesNotExist, AttributeError):
                     pass
             cache.set(key, user)
         request._cached_user = user
