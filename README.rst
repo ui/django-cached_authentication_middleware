@@ -39,6 +39,8 @@ To run the test suite::
 
     ./runtests.py
 
+To run the test suite with Django custom user::
+
     ./runtests_custom_user.py
 
 Changelog
