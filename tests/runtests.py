@@ -26,21 +26,28 @@ MIDDLEWARE_CLASSES = (
     'cached_auth.Middleware',
 )
 
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin',
+    'cached_auth'
+)
 
-settings.configure(DEBUG=True,
-                   DATABASES=DATABASES,
-                   INSTALLED_APPS=('django.contrib.auth',
-                                   'django.contrib.contenttypes',
-                                   'django.contrib.sessions',
-                                   'django.contrib.admin',
-                                   'cached_auth',),
-                   CACHES=CACHES,
-                   MIDDLEWARE_CLASSES=MIDDLEWARE_CLASSES,
-                   ROOT_URLCONF='urls')
+
+settings.configure(
+    DEBUG=True,
+    DATABASES=DATABASES,
+    INSTALLED_APPS=INSTALLED_APPS,
+    CACHES=CACHES,
+    MIDDLEWARE_CLASSES=MIDDLEWARE_CLASSES,
+    ROOT_URLCONF='urls'
+)
 
 
 from django.test.simple import DjangoTestSuiteRunner
 test_runner = DjangoTestSuiteRunner(verbosity=1)
 failures = test_runner.run_tests(['cached_auth', ])
+
 if failures:
     sys.exit(failures)

@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 import os
 import sys
+import django
+
+# Only run this test on django 1.5 and above
+if django.VERSION < (1, 5):
+    sys.exit()
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -34,7 +39,7 @@ settings.configure(DEBUG=True,
                                    'django.contrib.sessions',
                                    'django.contrib.admin',
                                    'custom_user',
-                                   'cached_auth'
+                                   'cached_auth',
                                    ),
                    CACHES=CACHES,
                    MIDDLEWARE_CLASSES=MIDDLEWARE_CLASSES,
