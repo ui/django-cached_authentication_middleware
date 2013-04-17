@@ -37,11 +37,11 @@ Running Tests
 
 To run the test suite::
 
-    ./runtests.py
+    python tests/runtests.py
 
-To run the test suite with Django custom user::
+To run the test suite with Django custom user (this will run only on Django 1.5)::
 
-    ./runtests_custom_user.py
+    python tests/runtests_custom_user.py
 
 Changelog
 ---------
