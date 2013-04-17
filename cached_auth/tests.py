@@ -1,10 +1,15 @@
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
 from cached_auth import CACHE_KEY
+
+try:
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+except ImportError:
+    from django.contrib.auth.models import User
 
 
 class MiddlewareTest(TestCase):

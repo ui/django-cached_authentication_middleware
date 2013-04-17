@@ -37,7 +37,11 @@ Running Tests
 
 To run the test suite::
 
-    django-admin.py test cached_auth --settings=cached_auth.tests.settings --pythonpath=.
+    ./runtests.py
+
+To run the test suite with Django custom user::
+
+    ./runtests_custom_user.py
 
 Changelog
 ---------
