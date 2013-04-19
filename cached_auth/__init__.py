@@ -18,7 +18,6 @@ except ImportError:
 
 CACHE_KEY = 'cached_auth_middleware:%s'
 
-
 try:
     app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
     profile_model = models.get_model(app_label, model_name)
@@ -41,10 +40,16 @@ def get_cached_user(request):
             user = cache.get(key)
         except KeyError:
             user = AnonymousUser()
-
         if user is None:
             user = get_user(request)
-
+            if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR_FUNCTION'):
+                tmp = settings.CACHED_AUTH_PREPROCESSOR_FUNCTION.split(".")
+                module_name, function_name = ".".join(tmp[0:-1]), tmp[-1]
+                func = getattr(__import__(module_name, fromlist=['']), function_name)
+                if callable(func):
+                    user = func(user, request)
+                else:
+                    raise Exception("CACHED_AUTH_PREPROCESSOR_FUNCTION should be callable function with arguments user, request")
             # Try to populate profile cache if profile is installed
             if profile_model:
                 try:
