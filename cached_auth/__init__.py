@@ -15,7 +15,6 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 
-
 CACHE_KEY = 'cached_auth_middleware:%s'
 
 
@@ -24,6 +23,30 @@ try:
     profile_model = models.get_model(app_label, model_name)
 except (ValueError, AttributeError):
     profile_model = None
+
+
+def profile_preprocessor(user, request):
+    """ Cache user profile """
+    if profile_model:
+        try:
+            user.get_profile()
+        # Handle exception for user with no profile and AnonymousUser
+        except (profile_model.DoesNotExist, AttributeError):
+            pass
+    return user
+
+
+user_preprocessor = None
+if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR'):
+    tmp = settings.CACHED_AUTH_PREPROCESSOR.split(".")
+    module_name, function_name = ".".join(tmp[0:-1]), tmp[-1]
+    func = getattr(__import__(module_name, fromlist=['']), function_name)
+    if callable(func):
+        user_preprocessor = func
+    else:
+        raise Exception("CACHED_AUTH_PREPROCESSOR must be callable with 2 arguments user and request")
+else:
+    user_preprocessor = profile_preprocessor
 
 
 def invalidate_cache(sender, instance, **kwargs):
@@ -41,17 +64,10 @@ def get_cached_user(request):
             user = cache.get(key)
         except KeyError:
             user = AnonymousUser()
-
         if user is None:
             user = get_user(request)
-
-            # Try to populate profile cache if profile is installed
-            if profile_model:
-                try:
-                    user.get_profile()
-                # Handle exception for user with no profile and AnonymousUser
-                except (profile_model.DoesNotExist, AttributeError):
-                    pass
+            if user_preprocessor:
+                user = user_preprocessor(user, request)
             cache.set(key, user)
         request._cached_user = user
     return request._cached_user
