@@ -15,8 +15,12 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 
-
 CACHE_KEY = 'cached_auth_middleware:%s'
+
+
+def profile_preprocessor(user, request):
+    """ Cache user profile """
+    return user.get_profile()
 
 user_preprocessor = None
 if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR'):
@@ -26,7 +30,9 @@ if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR'):
     if callable(func):
         user_preprocessor = func
     else:
-        raise Exception("CACHED_AUTH_PREPROCESSOR_FUNCTION should be callable function with arguments user, request")
+        raise Exception("CACHED_AUTH_PREPROCESSOR must be callable with 2 arguments user and request")
+else:
+    user_preprocessor = profile_preprocessor
 
 try:
     app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
@@ -53,14 +59,7 @@ def get_cached_user(request):
         if user is None:
             user = get_user(request)
             if user_preprocessor:
-                user_preprocessor(user, request)
-            # Try to populate profile cache if profile is installed
-            if profile_model:
-                try:
-                    user.get_profile()
-                # Handle exception for user with no profile and AnonymousUser
-                except (profile_model.DoesNotExist, AttributeError):
-                    pass
+                user = user_preprocessor(user, request)
             cache.set(key, user)
         request._cached_user = user
     return request._cached_user
