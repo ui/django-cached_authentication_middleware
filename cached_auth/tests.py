@@ -4,6 +4,9 @@ from django.test import TestCase
 from django.test.client import Client
 from django.test.utils import override_settings
 from cached_auth import CACHE_KEY
+from django.conf import settings
+
+import cached_auth
 
 try:
     from django.contrib.auth import get_user_model
@@ -53,8 +56,9 @@ class MiddlewareTest(TestCase):
         self.user.delete()
         self.assertEqual(cache.get(key), None)
 
-    @override_settings(CACHED_AUTH_PREPROCESSOR_FUNCTION='cached_auth.tests.auth_preprocessor')
+    @override_settings(CACHED_AUTH_PREPROCESSOR='cached_auth.tests.auth_preprocessor')
     def test_cached_auth_preprocessor_function(self):
+        reload(cached_auth)
         client = Client()
         key = CACHE_KEY % self.user.id
         self.assertEqual(cache.get(key), None)
