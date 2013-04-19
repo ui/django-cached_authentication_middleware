@@ -18,9 +18,23 @@ except ImportError:
 CACHE_KEY = 'cached_auth_middleware:%s'
 
 
+try:
+    app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
+    profile_model = models.get_model(app_label, model_name)
+except (ValueError, AttributeError):
+    profile_model = None
+
+
 def profile_preprocessor(user, request):
     """ Cache user profile """
-    return user.get_profile()
+    if profile_model:
+        try:
+            user.get_profile()
+        # Handle exception for user with no profile and AnonymousUser
+        except (profile_model.DoesNotExist, AttributeError):
+            pass
+    return user
+
 
 user_preprocessor = None
 if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR'):
@@ -33,12 +47,6 @@ if hasattr(settings, 'CACHED_AUTH_PREPROCESSOR'):
         raise Exception("CACHED_AUTH_PREPROCESSOR must be callable with 2 arguments user and request")
 else:
     user_preprocessor = profile_preprocessor
-
-try:
-    app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
-    profile_model = models.get_model(app_label, model_name)
-except (ValueError, AttributeError):
-    profile_model = None
 
 
 def invalidate_cache(sender, instance, **kwargs):
