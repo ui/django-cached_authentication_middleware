@@ -46,19 +46,18 @@ A classic example of this would be to attach ``Profile`` data
 to ``User`` object so calling ``request.user.profile`` does not incur a
 database hit. Here's how we can implement it.
 
-```python
+.. code-block:: python
 
-def attach_profile(user, request):
-    try:
-        user.get_profile()
-    # Handle exception for user with no profile and AnonymousUser
-    except (Profile.DoesNotExist, AttributeError):
-        pass
+    def attach_profile(user, request):
+        try:
+            user.get_profile()
+        # Handle exception for user with no profile and AnonymousUser
+        except (Profile.DoesNotExist, AttributeError):
+            pass
 
 
-# In settings.py:
-CACHED_AUTH_PREPROCESSOR = 'path.to.module.attach_profile'
-```
+    # In settings.py:
+    CACHED_AUTH_PREPROCESSOR = 'path.to.module.attach_profile'
 
 Running Tests
 -------------
