@@ -54,6 +54,7 @@ database hit. Here's how we can implement it.
         # Handle exception for user with no profile and AnonymousUser
         except (Profile.DoesNotExist, AttributeError):
             pass
+        return user
 
 
     # In settings.py:
