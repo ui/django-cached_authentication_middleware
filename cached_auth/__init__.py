@@ -11,9 +11,9 @@ from django.contrib.auth.models import AnonymousUser
 
 try:
     from django.contrib.auth import get_user_model
-    User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
+    get_user_model = lambda: User
 
 CACHE_KEY = 'cached_auth_middleware:%s'
 
@@ -50,7 +50,7 @@ else:
 
 
 def invalidate_cache(sender, instance, **kwargs):
-    if isinstance(instance, User):
+    if isinstance(instance, get_user_model()):
         key = CACHE_KEY % instance.id
     else:
         key = CACHE_KEY % instance.user_id
@@ -76,8 +76,8 @@ def get_cached_user(request):
 class Middleware(object):
 
     def __init__(self):
-        post_save.connect(invalidate_cache, sender=User)
-        post_delete.connect(invalidate_cache, sender=User)
+        post_save.connect(invalidate_cache, sender=get_user_model())
+        post_delete.connect(invalidate_cache, sender=get_user_model())
         if profile_model:
             post_save.connect(invalidate_cache, sender=profile_model)
             post_delete.connect(invalidate_cache, sender=profile_model)
