@@ -3,7 +3,6 @@ VERSION = (0, 2, 0)
 from django.conf import settings
 from django.contrib.auth import get_user, SESSION_KEY
 from django.core.cache import cache
-from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.utils.functional import SimpleLazyObject
 
@@ -19,8 +18,15 @@ CACHE_KEY = 'cached_auth_middleware:%s'
 
 
 try:
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models import get_model
+
+
+try:
     app_label, model_name = settings.AUTH_PROFILE_MODULE.split('.')
-    profile_model = models.get_model(app_label, model_name)
+    profile_model = get_model(app_label, model_name)
 except (ValueError, AttributeError):
     profile_model = None
 
