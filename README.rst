@@ -6,7 +6,7 @@ to the database.
 Installation
 ------------
 
-.. image:: https://travis-ci.org/ui/django-cached_authentication_middleware.png?branch=master
+|Build Status|
 
 
 * Install via pypi::
@@ -74,6 +74,10 @@ To run the test suite with Django custom user (this will run only on Django 1.5)
 Changelog
 ---------
 
+Version 0.2.1
+=============
+* Better Django 1.8 compatibility.
+
 Version 0.2.0
 =============
 
@@ -89,3 +93,7 @@ Version 0.1
 ===========
 
 * Initial release
+
+
+.. |Build Status| image:: https://travis-ci.org/ui/django-cached_authentication_middleware.png?branch=master
+   :target: https://travis-ci.org/ui/django-cached_authentication_middleware

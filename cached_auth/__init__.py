@@ -1,4 +1,4 @@
-VERSION = (0, 2, 0)
+VERSION = (0, 2, 1)
 
 from django.conf import settings
 from django.contrib.auth import get_user, SESSION_KEY
