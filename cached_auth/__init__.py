@@ -1,4 +1,4 @@
-VERSION = (0, 2, 1)
+VERSION = (0, 2, 2)
 
 from django.conf import settings
 from django.contrib.auth import get_user, SESSION_KEY
@@ -79,9 +79,30 @@ def get_cached_user(request):
     return request._cached_user
 
 
-class Middleware(object):
+class MiddlewareMixin(object):
+    """
+    Ported from Django 1.11: django.utils.deprecation.MiddlewareMixin
+    """
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        super(MiddlewareMixin, self).__init__()
 
-    def __init__(self):
+    def __call__(self, request):
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
+        return response
+
+
+class Middleware(MiddlewareMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(Middleware, self).__init__(*args, **kwargs)
+
         post_save.connect(invalidate_cache, sender=get_user_model())
         post_delete.connect(invalidate_cache, sender=get_user_model())
         if profile_model:
