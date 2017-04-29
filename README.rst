@@ -74,6 +74,10 @@ To run the test suite with Django custom user (this will run only on Django 1.5)
 Changelog
 ---------
 
+Version 0.2.2 (2017-04-29)
+==================
+* Added compatibility with Django 1.11. Thanks @ondrejsika!
+
 Version 0.2.1
 =============
 * Better Django 1.8 compatibility.
